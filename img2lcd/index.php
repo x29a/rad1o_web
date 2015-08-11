@@ -35,7 +35,7 @@ echo system('(./doconversion.sh >> /tmp/conversion.log) &');
 if(isset($_GET['f']) && !empty($_GET['f']))
 {
   $user_hash = basename(strip_tags(html_entity_decode($_GET['f'])));
-  $file_path = $converted_dir.$user_hash;
+  $file_path = $converted_dir.$user_hash.'/'.$user_hash;
   $lcd_path = $file_path.'.lcd';
   $header_path = $lcd_path.'.h';
 

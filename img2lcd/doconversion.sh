@@ -40,15 +40,19 @@ if ( mkdir ${LOCKDIR} ) 2> /dev/null; then
         CODE="--code"
       fi
 
-      OUTPUT_FILENAME=$OUTPUT_PATH/$(basename ${PARAMS[0]})".lcd"
+      OUTPUT_FILENAME=$(basename ${PARAMS[0]})
+      OUTPUT_DIRNAME=$OUTPUT_PATH/$OUTPUT_FILENAME
 
-      $PERL_BIN $CONVERT_SCRIPT $BITS $CODE $FILE $OUTPUT_FILENAME
+      mkdir -p $OUTPUT_DIRNAME
+
+      OUTPUT_FILE=$OUTPUT_DIRNAME/$OUTPUT_FILENAME".lcd"
+
+      $PERL_BIN $CONVERT_SCRIPT $BITS $CODE $FILE $OUTPUT_FILE
 
       # check if output file exists
-      if [ -f "$OUTPUT_FILENAME" ]
+      if [ -f "$OUTPUT_FILE" ]
       then
-        echo "done: $FILE"
-        rm $FILE
+        mv $FILE $OUTPUT_DIRNAME
       else
         echo "error: $FILE"
       fi
