@@ -35,20 +35,24 @@ echo system('(./doconversion.sh >> /tmp/conversion.log) &');
 if(isset($_GET['f']) && !empty($_GET['f']))
 {
   $user_hash = basename(strip_tags(html_entity_decode($_GET['f'])));
-  $file_path = $converted_dir.$user_hash.'/'.$user_hash;
-  $lcd_path = $file_path.'.lcd';
-  $header_path = $lcd_path.'.h';
+  $data_path = $converted_dir.$user_hash.'/';
+  $lcd_filename = $user_hash.'.lcd';
+  $header_filename = $lcd_filename.'.h';
+
+  $lcd_path = $data_path.$lcd_filename;
+  $header_path = $data_path.$header_filename;
 
   if(file_exists($lcd_path))
   {
     // header also generated, pack it up
     if(file_exists($header_path))
     {
+      chdir($data_path);
       $zipname = $user_hash.'.zip';
       $zip = new ZipArchive;
       $zip->open($zipname, ZipArchive::CREATE);
-      $zip->addFile($lcd_path);
-      $zip->addFile($header_path);
+      $zip->addFile($lcd_filename);
+      $zip->addFile($header_filename);
       $zip->close();
       header('Content-Type: application/zip');
       header('Content-disposition: attachment; filename='.$zipname);
