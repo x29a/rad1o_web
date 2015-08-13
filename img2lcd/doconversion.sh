@@ -53,7 +53,7 @@ if ( mkdir ${LOCKDIR} ) 2> /dev/null; then
       if [ -f "$OUTPUT_FILE" ]
       then
         # also create a thumbnail
-        convert -quality 5 -thumbnail 130 $FILE $OUTPUT_DIRNAME/thumb.jpg
+        convert -quality 7 -thumbnail 130 $FILE $OUTPUT_DIRNAME/thumb.jpg
         mv $FILE $OUTPUT_DIRNAME
       else
         echo "error: $FILE"
