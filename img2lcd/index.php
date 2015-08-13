@@ -1,5 +1,5 @@
 <?php
-// see http://www.w3schools.com/php/php_file_upload.asp
+session_start();
 
 // config
 $target_dir = "queue/";
@@ -8,6 +8,8 @@ $converted_dir = "converted/";
 $max_file_size = 500000;
 $allowed_filetypes = array('jpeg', 'jpg', 'gif', 'png');
 $allowed_bits = array(8, 12, 16);
+
+$items_gallery = 20;
 
 // preconditions
 if(!file_exists($target_dir) || is_file($target_dir))
@@ -31,6 +33,18 @@ function generateId($filename)
 // trigger conversion
 echo system('(./doconversion.sh >> /tmp/conversion.log) &');
 
+// toggle gallery
+if(isset($_GET['g']))
+{
+  if((int)$_GET['g'] == 1)
+  {
+    $_SESSION['gallery'] = 1;
+  }
+  else
+  {
+    $_SESSION['gallery'] = 0;
+  }
+}
 // converted file request
 if(isset($_GET['f']) && !empty($_GET['f']))
 {
@@ -76,6 +90,7 @@ if(isset($_GET['f']) && !empty($_GET['f']))
 }
 
 // file upload
+// see http://www.w3schools.com/php/php_file_upload.asp
 if(isset($_FILES['fileToUpload']) && is_array($_FILES['fileToUpload']))
 {
   $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
@@ -186,6 +201,44 @@ if(isset($_FILES['fileToUpload']) && is_array($_FILES['fileToUpload']))
     Code: <input type="checkbox" name="code"><br/>
     <input type="submit" value="Convert Image" name="submit">
 </form>
+<br/>
+<?php
+if(isset($_SESSION['gallery']) && $_SESSION['gallery'] == 1)
+{
+  echo '<a href="'.$_SERVER['PHP_SELF'].'?g=0">hide gallery</a>';
+}
+else
+{
+  echo '<a href="'.$_SERVER['PHP_SELF'].'?g=1">show gallery</a>';
+}
+?>
+  <hr>
+<?php
+if(isset($_SESSION['gallery']) && $_SESSION['gallery']==1)
+{
+  $thumbs = glob($converted_dir.'*/thumb.jpg');
+  usort($thumbs, create_function('$b,$a', 'return filemtime($a) - filemtime($b);'));
+
+  $items_shown = 0;
+
+  foreach($thumbs as $thumb)
+  {
+    if($items_shown >= $items_gallery)
+    {
+      break;
+    }
+
+    $hash = str_replace(array($converted_dir, '/'), '', dirname($thumb));
+    $pic_data = file_get_contents($thumb);
+    if(count($pic_data)>0)
+    {
+      echo '<a href="'.$_SERVER['PHP_SELF'].'?f='.$hash.'" target="_blank"><img src="'.$thumb.'"></a><br/>';
+
+      $items_shown++;
+    }
+  }
+}
+?>
 
 </body>
 </html>
