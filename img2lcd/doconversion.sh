@@ -52,6 +52,8 @@ if ( mkdir ${LOCKDIR} ) 2> /dev/null; then
       # check if output file exists
       if [ -f "$OUTPUT_FILE" ]
       then
+        # also create a thumbnail
+        convert -quality 5 -thumbnail 130 $FILE $OUTPUT_DIRNAME/thumb.jpg
         mv $FILE $OUTPUT_DIRNAME
       else
         echo "error: $FILE"
